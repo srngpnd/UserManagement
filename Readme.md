@@ -66,19 +66,19 @@ curl --request POST \
 ----------- Get User --------------
 
 curl --request GET \
-  --url 'http://localhost:17332/api/user/Get?email=superman%40superman.com' \
+  --url 'http://localhost:17332/api/user/Get?email=batman%40batman.com' \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
 
 ----------- Delete User ------------
 
 curl --request DELETE \
-  --url 'http://localhost:17332/api/user?email=superman%40superman.com' \
+  --url 'http://localhost:17332/api/user?email=batman%40batman.com' \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
 
 ----------- Get User Security ----------
 
 curl --request GET \
-  --url 'http://localhost:17332/api/user/usersecurities?email=ironman%40ironman.com' \
+  --url 'http://localhost:17332/api/user/usersecurities?email=batman%40batman.com' \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
 
 ----------- Patch User Security ----------
@@ -88,5 +88,5 @@ curl --request PATCH \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=' \
   --header 'content-type: application/json' \
   --data '[
-	"batman@batman.com","superman@superman.com"
+	"batman@batman.com"
 ]'
