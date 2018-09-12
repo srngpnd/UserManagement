@@ -118,19 +118,22 @@ namespace UserManagement.Controllers
                     var userSecurities = new List<UserSecurity>();
                     foreach (var item in allowedEmails.Distinct())
                     {
-                        var userSecurity = new UserSecurity()
+                        if(dbEmails.Any(x => x.Email == item))
                         {
-                            UserID = user.KeyID,
-                            AllowedUserID = dbEmails.First(x => x.Email == item).KeyID
-                        };
-                        userSecurities.Add(userSecurity);
+                            var userSecurity = new UserSecurity()
+                            {
+                                UserID = user.KeyID,
+                                AllowedUserID = dbEmails.First(x => x.Email == item).KeyID
+                            };
+                            userSecurities.Add(userSecurity);
+                        }
                     }
                     _dbContext.UserSecurities.AddRange(userSecurities);
                     _dbContext.SaveChanges();
                     var exceptEmails = string.Join(",",allowedEmails.Except(dbEmails.Select(x => x.Email)));
                     if(exceptEmails.Any())
                     {
-                        return "Patched Successfully except" + exceptEmails;
+                        return "Patch Successful except " + exceptEmails;
                     }
                     return "Patched Successfully";
                 }
