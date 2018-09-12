@@ -72,8 +72,7 @@ namespace UserManagement.Controllers
             try
             {
                 var validatedUsers = _userService.ValidateUser(userVO);
-                var allowedUsersFromVO = userVO.SelectMany(y => y.AllowedUserAccess).Distinct().ToList();
-                var allowedUsers = await _dbContext.Users.Where(x => allowedUsersFromVO.Contains(x.Email)).ToListAsync();
+                var dbUsers = await _dbContext.Users.ToListAsync();
                 foreach (var addedUser in userVO)
                 {
                     var user = new User();
@@ -84,12 +83,12 @@ namespace UserManagement.Controllers
                     addedUser.AllowedUserAccess.Add(addedUser.Email);
                     foreach (var item in addedUser.AllowedUserAccess.Distinct())
                     {
-                        if (allowedUsers.Any(x => x.Email == item))
+                        if (dbUsers.Any(x => x.Email == item) || addedUser.Email == item)
                         {
                             var userSecurity = new UserSecurity()
                             {
                                 UserID = user.KeyID,
-                                AllowedUserID = allowedUsers.First(x => x.Email == item).KeyID
+                                AllowedUserID = addedUser.Email == item ? user.KeyID : dbUsers.First(x => x.Email == item).KeyID
                             };
                             userSecurities.Add(userSecurity);
                         }
@@ -153,17 +152,12 @@ namespace UserManagement.Controllers
         {
             try
             {
-                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
-                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
                 var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
                 if (user != null)
                 {
-                    if (!allowedUserIDs.Contains(user.KeyID))
-                        throw new Exception("Insufficient Permissions");
                     var userSecurityIDs = user.UserSecurities.Select(x => x.AllowedUserID).ToList();
                     var allowedUserEmails = _dbContext.Users.Where(x => userSecurityIDs.Contains(x.KeyID)).Select(x => x.Email).ToList();
                     return new { AllowedUserAccess = allowedUserEmails.ToArray() };
-                    
                 }
                 else
                 {

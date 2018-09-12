@@ -1,11 +1,14 @@
 Please note the following points
 
-- The following project works only when there is an Authorization header.
-- Have seeded a default user with Authorization Header as YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=
+- Only EntityFramework used
+- Have thrown exception for Insufficient Permission wherever required 
+- The rest API calls work only when there is an Authorization header.
+- Have seeded a default super user (Bruce) with Authorization Header as YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=. It has all access.
 - The Authorization Header is Base64 encrypted of [Email:Password] of the User
 - Audits have been created
 - Only few validations are added (None to the request object)
-- It supports the following requests
+- Get and Delete are based on User Permission. Any user can Post or Patch.
+- Sample Requests
 
 -------- List Users -----------
 
