@@ -2,7 +2,7 @@ Please note the following points
 
 - The following project works only when there is an Authorization header.
 - Have seeded a default user with Authorization Header as YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=
-- The Authorization Header is Base64 encrypted of [<Email>:<Password>] of the User
+- The Authorization Header is Base64 encrypted of [Email:Password] of the User
 - Audits have been created
 - Only few validations are added (None to the request object)
 - It supports the following requests
