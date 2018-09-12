@@ -12,6 +12,7 @@ namespace UserManagement.Models
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int AuditID { get; set; }
+        public string TransactionID { get; set; }
         public DateTime TransactionTime { get; set; }
         public string TransactionBy { get; set; }
         public string ChangeAction { get; set; }

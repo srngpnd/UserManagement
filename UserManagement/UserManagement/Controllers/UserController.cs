@@ -66,8 +66,8 @@ namespace UserManagement.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<dynamic> Post(List<UserViewModel> userVO)
+        [HttpPut]
+        public async Task<dynamic> Save(List<UserViewModel> userVO)
         {
             try
             {
@@ -104,8 +104,38 @@ namespace UserManagement.Controllers
             }
         }
 
+        [HttpPost]
+        public async Task<dynamic> Post([FromUri]string email,[FromBody]UserViewModel userVO)
+        {
+            try
+            {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+                if (user != null)
+                {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
+                    user.Active = userVO.Active;
+                    user.Locked = userVO.Locked;
+                    user.FirstName = userVO.FirstName;
+                    user.LastName = userVO.LastName;
+                    _dbContext.SaveChanges();
+                    return "Update successfull";
+                }
+                else
+                {
+                    return "Enter a valid Email";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         [HttpPatch]
-        public async Task<dynamic> Patch([FromUri]string email,[FromBody]List<string> allowedEmails)
+        public async Task<dynamic> PatchSecurities([FromUri]string email,[FromBody]List<string> allowedEmails)
         {
             try
             {
@@ -194,6 +224,80 @@ namespace UserManagement.Controllers
                 }
             }
             catch(Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet]
+        public async Task<dynamic> GetUserAuditLogs([FromUri]string email)
+        {
+            try
+            {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+                if (user != null)
+                {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
+                    var userAudits = await (from userAudit in _dbContext.UserAudits.Where(x => x.TransactionBy == email)
+                                           select new
+                                           {
+                                               ChangeAction = userAudit.ChangeAction,
+                                               TransactionTime = userAudit.TransactionTime,
+                                               Active = userAudit.Active,
+                                               Locked = userAudit.Locked,
+                                               FirstName = userAudit.FirstName,
+                                               LastName = userAudit.LastName,
+                                               Email = userAudit.Email
+                                           }).OrderByDescending(x => x.TransactionTime).ToListAsync();
+                    return userAudits;
+                }
+                else
+                {
+                    return "Enter a valid Email";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        [HttpGet]
+        public async Task<dynamic> GetUserSecurityAuditLogs([FromUri]string email)
+        {
+            try
+            {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+                if (user != null)
+                {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
+                    var userAudits = await (from userSecurityAudit in _dbContext.UserSecurityAudits.Where(x => x.TransactionBy == email)
+                                            join allowedUser in _dbContext.Users on userSecurityAudit.AllowedUserID equals allowedUser.KeyID into allowed
+                                            from au in allowed.DefaultIfEmpty()
+                                            join mainUser in _dbContext.Users on userSecurityAudit.UserID equals user.KeyID into users
+                                            from mUser in users.DefaultIfEmpty()
+                                            select new
+                                            {
+                                                ChangeAction = userSecurityAudit.ChangeAction,
+                                                TransactionID = userSecurityAudit.TransactionID,
+                                                TransactionTime = userSecurityAudit.TransactionTime,
+                                                ParentUser = mUser.Email,
+                                                AllowedUser = au.Email
+                                            }).OrderByDescending(x => x.TransactionTime).ToListAsync();
+                    return userAudits;
+                }
+                else
+                {
+                    return "Enter a valid Email";
+                }
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }

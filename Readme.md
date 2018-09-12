@@ -7,7 +7,7 @@ Please note the following points
 - The Authorization Header is Base64 encrypted of [Email:Password] of the User
 - Audits have been created
 - Only few validations are added (None to the request object)
-- Get and Delete are based on User Permission. Any user can Post or Patch.
+- Get,Delete,Post are based on User Permission. Any user can Patch or List.
 - Sample Requests
 
 -------- List Users -----------
@@ -17,10 +17,16 @@ curl --request GET \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=' \
   --header 'content-type: application/json'
 
+----------- Get User --------------
 
--------- Add Users ------------
+curl --request GET \
+  --url 'http://localhost:17332/api/user/Get?email=batman%40batman.com' \
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
 
-curl --request POST \
+
+-------- Save Users ------------
+
+curl --request PUT \
   --url http://localhost:17332/api/user \
   --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=' \
   --header 'content-type: application/json' \
@@ -63,23 +69,18 @@ curl --request POST \
 	}
 ]'
 
------------ Get User --------------
+---------- Update User -----------
 
-curl --request GET \
-  --url 'http://localhost:17332/api/user/Get?email=batman%40batman.com' \
-  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
-
------------ Delete User ------------
-
-curl --request DELETE \
+curl --request POST \
   --url 'http://localhost:17332/api/user?email=batman%40batman.com' \
-  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
-
------------ Get User Security ----------
-
-curl --request GET \
-  --url 'http://localhost:17332/api/user/usersecurities?email=batman%40batman.com' \
-  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE=' \
+  --header 'content-type: application/json' \
+  --data '{
+		"FirstName": "Bruce1",
+		"LastName": "Wayne1",
+		"Active": false,
+		"Locked": true
+}'
 
 ----------- Patch User Security ----------
 
@@ -90,3 +91,28 @@ curl --request PATCH \
   --data '[
 	"batman@batman.com"
 ]'
+
+----------- Get User Security ----------
+
+curl --request GET \
+  --url 'http://localhost:17332/api/user/usersecurities?email=batman%40batman.com' \
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
+
+----------- Delete User ------------
+
+curl --request DELETE \
+  --url 'http://localhost:17332/api/user?email=superman%40superman.com' \
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
+
+----------- View User Audit Logs -----------
+
+curl --request GET \
+  --url 'http://localhost:17332/api/user/getuserauditlogs?email=batman%40batman.com' \
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='
+
+
+----------- View User Security Audit Logs -----------
+
+curl --request GET \
+  --url 'http://localhost:17332/api/user/getusersecurityauditlogs?email=batman%40batman.com' \
+  --header 'authorization: YmF0bWFuQGJhdG1hbi5jb206V2VsY29tZTE='

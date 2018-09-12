@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Core.Objects;
 using System.Linq;
 using System.Web;
 using UserManagement.Models;
@@ -23,13 +24,15 @@ namespace UserManagement.Context
             var entries = this.ChangeTracker.Entries().Where(p => p.State == EntityState.Added || p.State == EntityState.Deleted || p.State == EntityState.Modified);
             var userAuditList = new List<UserAudit>();
             var userSecurityAuditList = new List<UserSecurityAudit>();
+            Guid guid = Guid.NewGuid();
             foreach (var entry in entries)
             {
-                if(entry.Entity.GetType() == typeof(User))
+                if(ObjectContext.GetObjectType(entry.Entity.GetType()) == typeof(User))
                 {
                     var user = entry.Cast<User>();
                     userAuditList.Add(new UserAudit {
                         ChangeAction = entry.State.ToString(),
+                        TransactionID = guid.ToString(),
                         TransactionBy = HttpContext.Current.User != null ? HttpContext.Current.User.Identity.Name : "System",
                         TransactionTime = DateTime.Now,
                         KeyID = user.Entity.KeyID,
@@ -42,12 +45,13 @@ namespace UserManagement.Context
                     });
                 }
                 else
-                    if(entry.Entity.GetType() == typeof(UserSecurity))
+                    if(ObjectContext.GetObjectType(entry.Entity.GetType()) == typeof(UserSecurity))
                 {
                     var userSecurity = entry.Cast<UserSecurity>();
                     userSecurityAuditList.Add(new UserSecurityAudit
                     {
                         ChangeAction = entry.State.ToString(),
+                        TransactionID = guid.ToString(),
                         TransactionBy = HttpContext.Current.User != null ? HttpContext.Current.User.Identity.Name : "System",
                         TransactionTime = DateTime.Now,
                         KeyID = userSecurity.Entity.KeyID,
