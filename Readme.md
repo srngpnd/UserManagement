@@ -1,5 +1,6 @@
 Please note the following points
 
+- Have used VS 2015 and SQL server
 - Only EntityFramework used
 - Have thrown exception for Insufficient Permission wherever required 
 - The rest API calls work only when there is an Authorization header.
