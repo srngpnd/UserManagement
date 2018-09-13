@@ -253,7 +253,7 @@ namespace UserManagement.Controllers
                     if (!allowedUserIDs.Contains(user.KeyID))
                         throw new Exception("Insufficient Permissions");
                     var userAudits = await (from userAudit in _dbContext.UserAudits.Where(x => x.TransactionBy == email)
-                                            select new
+                                            select new ViewModels.UserAudit
                                             {
                                                 ChangeAction = userAudit.ChangeAction,
                                                 TransactionTime = userAudit.TransactionTime,

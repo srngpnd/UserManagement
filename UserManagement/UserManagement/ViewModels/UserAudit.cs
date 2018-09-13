@@ -1,9 +1,11 @@
+using System;
+
 namespace UserManagement.ViewModels
 { 
     public class UserAudit
     { 
         public string ChangeAction { get; set; }
-        public string TransactionTime { get; set; }
+        public DateTime TransactionTime { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
