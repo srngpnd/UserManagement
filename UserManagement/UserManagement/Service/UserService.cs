@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using UserManagement.Context;
 using UserManagement.Models;
+using UserManagement.ViewModels;
 
 namespace UserManagement.Service
 {
@@ -15,7 +15,7 @@ namespace UserManagement.Service
         {
             db = new DataContext();
         }
-        public bool AuthenticateUser(string email,string password)
+        public bool AuthenticateUser(string email, string password)
         {
             var passwordService = new PasswordService();
             var encryptPassword = passwordService.EncryptPassword(password);

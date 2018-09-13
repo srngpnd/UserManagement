@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using UserManagement.Models;
+﻿using UserManagement.Models;
 using UserManagement.Service;
+using UserManagement.ViewModels;
 
 namespace UserManagement.Mapping
 {

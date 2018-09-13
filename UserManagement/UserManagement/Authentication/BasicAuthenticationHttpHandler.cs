@@ -5,6 +5,7 @@ using System.Net.Http.Headers;
 using System.Security.Principal;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using UserManagement.Service;
 
@@ -17,7 +18,7 @@ namespace UserManagement.Authentication
         public void Init(HttpApplication context)
         {
             context.AuthenticateRequest += OnApplicationAuthenticateRequest;
-            context.EndRequest += OnApplicationEndRequest;
+            //context.EndRequest += OnApplicationEndRequest;
         }
 
         private static void SetPrincipal(IPrincipal principal)
@@ -77,15 +78,15 @@ namespace UserManagement.Authentication
             }
         }
 
-        private static void OnApplicationEndRequest(object sender, EventArgs e)
-        {
-            var response = HttpContext.Current.Response;
-            if (response.StatusCode == 401)
-            {
-                response.Headers.Add("WWW-Authenticate",
-                    string.Format("Basic realm=\"{0}\"", Realm));
-            }
-        }
+        //private static void OnApplicationEndRequest(object sender, EventArgs e)
+        //{
+        //    var response = HttpContext.Current.Response;
+        //    if (response.StatusCode == 401)
+        //    {
+        //        response.Headers.Add("WWW-Authenticate",
+        //            string.Format("Basic realm=\"{0}\"", Realm));
+        //    }
+        //}
 
         public void Dispose()
         {
