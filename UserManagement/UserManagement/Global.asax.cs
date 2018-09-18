@@ -15,7 +15,6 @@ namespace UserManagement
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             Database.SetInitializer(new Initializer());
-            Database.SetInitializer(new MigrateDatabaseToLatestVersion<DataContext, MigrationConfig>());
         }
     }
 }

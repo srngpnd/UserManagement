@@ -31,6 +31,13 @@ namespace UserManagement.Controllers
                 UserMapping.MapUser(userVO, user);
                 _dbContext.Users.Add(user);
                 _dbContext.SaveChanges();
+                var userSecurity = new UserSecurity()
+                {
+                    UserID = user.KeyID,
+                    AllowedUserID = user.KeyID
+                };
+                _dbContext.UserSecurities.Add(userSecurity);
+                _dbContext.SaveChanges();
                 return "successful operation";
             }
             catch (Exception ex)
@@ -50,6 +57,13 @@ namespace UserManagement.Controllers
                     var user = new User();
                     UserMapping.MapUser(addedUser, user);
                     _dbContext.Users.Add(user);
+                    _dbContext.SaveChanges();
+                    var userSecurity = new UserSecurity()
+                    {
+                        UserID = user.KeyID,
+                        AllowedUserID = user.KeyID
+                    };
+                    _dbContext.UserSecurities.Add(userSecurity);
                     _dbContext.SaveChanges();
                 }
                 return "successful operation";
@@ -177,9 +191,13 @@ namespace UserManagement.Controllers
         {
             try
             {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
                 var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
                 if (user != null)
                 {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
                     var userSecurityIDs = user.UserSecurities.Select(x => x.AllowedUserID).ToList();
                     var allowedUserEmails = _dbContext.Users.Where(x => userSecurityIDs.Contains(x.KeyID)).Select(x => x.Email).ToList();
                     return new { AllowedUserAccess = allowedUserEmails.ToArray() };
@@ -201,9 +219,13 @@ namespace UserManagement.Controllers
         {
             try
             {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
                 var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
                 if (user != null)
                 {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
                     var currentUserSecurities = user.UserSecurities.Select(x => x.AllowedUserID).ToList();
                     var dbEmails = _dbContext.Users.Where(x => allowedEmails.Contains(x.Email) && !currentUserSecurities.Contains(x.KeyID)).ToList();
                     var userSecurities = new List<UserSecurity>();
@@ -245,9 +267,13 @@ namespace UserManagement.Controllers
         {
             try
             {
+                var allowedUsers = _userService.AllowedUsers(HttpContext.Current.User.Identity.Name);
+                var allowedUserIDs = allowedUsers.Select(x => x.KeyID).ToList();
                 var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
                 if (user != null)
                 {
+                    if (!allowedUserIDs.Contains(user.KeyID))
+                        throw new Exception("Insufficient Permissions");
                     var userSecuritiesList = new List<UserSecurity>();
                     var deleteEmailsIds = await _dbContext.Users.Where(x => deleteEmails.Contains(x.Email)).Select(x => x.KeyID).ToListAsync();
                     var userSecurities = await _dbContext.UserSecurities.Where(x => x.UserID == user.KeyID).ToListAsync();

@@ -97,7 +97,6 @@
     <Compile Include="Authentication\BasicAuthenticationHttpHandler.cs" />
     <Compile Include="Context\DataContext.cs" />
     <Compile Include="Context\Initializer.cs" />
-    <Compile Include="Context\MigrationConfig.cs" />
     <Compile Include="Context\Seeding.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Controllers\UserController.cs" />
