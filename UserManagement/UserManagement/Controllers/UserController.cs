@@ -239,6 +239,40 @@ namespace UserManagement.Controllers
             }
         }
 
+        [HttpDelete]
+        [Route("api/user/{email}/access")]
+        public async Task<dynamic> DeleteUserAccess([FromUri]string email, [FromBody]List<string> deleteEmails)
+        {
+            try
+            {
+                var user = await _dbContext.Users.FirstOrDefaultAsync(x => x.Email == email);
+                if (user != null)
+                {
+                    var userSecuritiesList = new List<UserSecurity>();
+                    var deleteEmailsIds = await _dbContext.Users.Where(x => deleteEmails.Contains(x.Email)).Select(x => x.KeyID).ToListAsync();
+                    var userSecurities = await _dbContext.UserSecurities.Where(x => x.UserID == user.KeyID).ToListAsync();
+                    foreach(var item in userSecurities)
+                    {
+                        if(deleteEmailsIds.Any(x => x == item.AllowedUserID))
+                        {
+                            userSecuritiesList.Add(item);
+                        }
+                    }
+                    _dbContext.UserSecurities.RemoveRange(userSecurities);
+                    _dbContext.SaveChanges();
+                    return "Deleted Successfully";
+                }
+                else
+                {
+                    return "Enter a valid Email";
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
         [HttpGet]
         [Route("api/user/{email}/audit")]
         public async Task<dynamic> GetAuditByEmail([FromUri]string email)

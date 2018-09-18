@@ -18,7 +18,6 @@ namespace UserManagement.Authentication
         public void Init(HttpApplication context)
         {
             context.AuthenticateRequest += OnApplicationAuthenticateRequest;
-            //context.EndRequest += OnApplicationEndRequest;
         }
 
         private static void SetPrincipal(IPrincipal principal)
@@ -77,16 +76,6 @@ namespace UserManagement.Authentication
                 HttpContext.Current.Response.End();
             }
         }
-
-        //private static void OnApplicationEndRequest(object sender, EventArgs e)
-        //{
-        //    var response = HttpContext.Current.Response;
-        //    if (response.StatusCode == 401)
-        //    {
-        //        response.Headers.Add("WWW-Authenticate",
-        //            string.Format("Basic realm=\"{0}\"", Realm));
-        //    }
-        //}
 
         public void Dispose()
         {
